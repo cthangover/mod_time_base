@@ -3,7 +3,7 @@
   "name": "Time Engine",
   "version": "1.0.0",
   "author": "ct",
-  "description": "Engine time subsystem: the in-game clock tick controller bridging SceneEventController timer pulses to RuntimeData.Time, the clock HUD widget, the 2D lighting stack (UiLightController, LampBehaviour, LightDef) installed into the kernel through LightingBridge, and the lighting.clear_map scenario action. Replaces the former Core/Settings/TimeTickController, Core/UI/Lights, Core/UI/Tool/TimeController and Core/Actions/LightingServiceImpl.",
+  "description": "The in-game clock, day and night: scenes change their look with the time, lamps and windows light them, and a portable lamp helps after dark.",
   "category": "engine, library",
   "sources": [
     "src/**/*.cs"
