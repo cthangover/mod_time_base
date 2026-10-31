@@ -54,7 +54,7 @@ namespace Cthangover.Mods.Time
 				if (!value)
 				{
 					pressingOnLamp = false;
-					if (isPlaced)
+					if (controller != null)
 					{
 						isPlaced = false;
 						controller?.UpdateLightPos(new Vector2(-1000f, -1000f));
@@ -68,12 +68,13 @@ namespace Cthangover.Mods.Time
 		{
 			base._Ready();
 			MouseFilter = MouseFilterEnum.Stop;
+            GuiInput += HandleLampInput;
 			controller = SceneContextNode.FindNode<UiLightController>("Lights");
 			GameLogger.Log("LIGHT", $"Lamp._Ready: controller={(controller != null ? "OK" : "NULL")}", LogLevel.Debug);
 		}
 
 		/// <summary>Click to place the light at the cursor, drag to move it, and click a placed lamp to pick it back up.</summary>
-		public override void _GuiInput(InputEvent @event)
+		private void HandleLampInput(InputEvent @event)
 		{
 			if (@event is InputEventMouseButton mouseButton)
 			{
@@ -105,7 +106,7 @@ namespace Cthangover.Mods.Time
 			}
 			else if (@event is InputEventMouseMotion mouseMotion)
 			{
-				if (Input.IsMouseButtonPressed(MouseButton.Left))
+				if (pressingOnLamp && Input.IsMouseButtonPressed(MouseButton.Left))
 				{
 					dragPosition = GetGlobalMousePosition();
 					controller?.UpdateLightPos(dragPosition);

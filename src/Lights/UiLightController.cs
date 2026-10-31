@@ -76,6 +76,28 @@ namespace Cthangover.Mods.Time
 		private readonly float[] lightInfluence = new float[11];
 
         private LampBehaviour lampBehaviour;
+        private string locationMode = "cycle";
+        /// <summary>Temporary location policy, reset when leaving the map. Does not mutate DarkMode or the saved clock.</summary>
+        public string LocationMode
+        {
+            get => locationMode;
+            set { locationMode = value is "day" or "night" ? value : "cycle"; SetTime(GameData.Instance?.Runtime?.Time?.Normalized ?? 12); }
+        }
+        public void SetLocationMode(string mode) => LocationMode = mode;
+        public Vector4 EffectiveWeights => LocationLighting.Weights(GameData.Instance?.Runtime?.Time?.Normalized ?? 12, locationMode, DarkMode, UseLight);
+        public bool LampAvailable => LocationLighting.LampAvailable(GameData.Instance?.Runtime?.Time?.Normalized ?? 12, locationMode, DarkMode, UseLight);
+        /// <summary>The same viewport-space lamp state used by novel backgrounds; an inactive lamp is never an automatic player aura.</summary>
+        public bool TryGetPortableLight(out Vector2 position, out Color color, out float radius, out float influence)
+        {
+            position = lightPositions[0]; color = lightColors[0]; radius = lightRadii[0]; influence = lightInfluence[0];
+            return LampAvailable && position.X > -100 && radius > 0 && influence > 0;
+        }
+        private void UpdateLampVisibility()
+        {
+            if (lampBehaviour == null || !GodotObject.IsInstanceValid(lampBehaviour)) lampBehaviour = FindLampChild();
+            if (lampBehaviour != null) lampBehaviour.Visible = LampAvailable;
+            if (!LampAvailable) lightPositions[0] = new Vector2(-1000, -1000);
+        }
 
         /// <summary>
         /// Priority <c>0</c> — the lighting controller runs before most other timer-tick
@@ -107,7 +129,7 @@ namespace Cthangover.Mods.Time
             set
             {
                 UseLight = value;
-                ChangeUseTime(UseLight);
+                SetTime(GameData.Instance?.Runtime?.Time?.Normalized ?? 12f);
             }
         }
 
@@ -235,16 +257,6 @@ namespace Cthangover.Mods.Time
         /// </summary>
         public void OnTimerTick()
         {
-	        lampBehaviour ??= FindLampChild();
-
-            if (lampBehaviour != null)
-            {
-                var time = GameData.Instance?.Runtime?.Time;
-                var hours = time?.Hours ?? 0;
-                var newVis = DarkMode || !(hours >= 6 && hours < 22);
-                lampBehaviour.Visible = newVis;
-            }
-
             SetTime(GameData.Instance?.Runtime?.Time?.Normalized ?? 0f);
         }
 
@@ -283,11 +295,9 @@ namespace Cthangover.Mods.Time
 
 		private void PushAllParams(ShaderMaterial material)
 		{
-			var weights = DarkMode
-				? new Vector4(0, 0, 0, 1)
-				: CalculateTimeWeights(GameData.Instance?.Runtime?.Time?.Normalized ?? 0f);
+			var weights = EffectiveWeights;
 			material.SetShaderParameter("time_weights", weights);
-			material.SetShaderParameter("use_time", UseLight);
+			material.SetShaderParameter("use_time", UseLight || DarkMode || locationMode != "cycle");
 
 			var posArray = new Godot.Collections.Array<Vector2>();
 			var colArray = new Godot.Collections.Array<Color>();
@@ -304,7 +314,7 @@ namespace Cthangover.Mods.Time
 			int count = 0;
 			if (lightPositions[0].X > -100)
 				count++;
-			count += staticLightCount;
+			count = System.Math.Max(count, staticLightCount);
 
 			material.SetShaderParameter("light_count", count);
 			material.SetShaderParameter("light_positions", posArray);
@@ -345,10 +355,10 @@ namespace Cthangover.Mods.Time
             int count = 0;
             if (lightPositions[0].X > -100)
                 count++;
-            count += staticLightCount;
+            count = System.Math.Max(count, staticLightCount);
 
             SetShaderArrays(count);
-            ChangeUseTime(UseLight);
+            ChangeUseTime(UseLight || DarkMode || locationMode != "cycle");
         }
 
         /// <summary>
@@ -363,10 +373,10 @@ namespace Cthangover.Mods.Time
 			int count = 0;
 			if (lightPositions[0].X > -100)
 				count++;
-			count += staticLightCount;
+			count = System.Math.Max(count, staticLightCount);
 
 			SetShaderArrays(count);
-			ChangeUseTime(UseLight);
+			ChangeUseTime(UseLight || DarkMode || locationMode != "cycle");
 		}
 
         /// <summary>
@@ -391,16 +401,9 @@ namespace Cthangover.Mods.Time
         /// <param name="normalizedHour">Hour in 0–24 range (may be fractional).</param>
         public void SetTime(float normalizedHour)
         {
-            if (DarkMode)
-            {
-                var night = new Vector4(0, 0, 0, 1);
-                ForEachMaterial(m => m.SetShaderParameter("time_weights", night));
-            }
-            else
-            {
-                var weights = CalculateTimeWeights(normalizedHour);
-                ForEachMaterial(m => m.SetShaderParameter("time_weights", weights));
-            }
+            UpdateLampVisibility();
+            var weights = LocationLighting.Weights(normalizedHour, locationMode, DarkMode, UseLight);
+            ForEachMaterial(m => m.SetShaderParameter("time_weights", weights));
             UpdateShaders();
         }
 
