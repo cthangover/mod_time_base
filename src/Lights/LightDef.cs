@@ -5,27 +5,36 @@ namespace Cthangover.Mods.Time
 {
     /// <summary>
     /// Serializable light definition for JSON scene lighting. Coordinates are
-    /// viewport-relative (0.0–1.0) so scenes adapt to different resolutions.
+    /// target-relative so scenes adapt to different resolutions. Backgrounds use 0–1; free map artwork can extend beyond that coordinate basis.
     /// ToPixelPos/FromPixelPos convert between normalized space and pixel space
     /// using a reference viewport size. Color is stored as a hex string for
     /// human-readable JSON editing.
     /// </summary>
 	public class LightDef
 	{
+        /// <summary>Optional resource-local identity for keyed patches; legacy scenario lights need no id.</summary>
+        [JsonPropertyName("id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Id { get; set; }
+
+        /// <summary>Fields supplied by dependent mods survive an editor save.</summary>
+        [JsonExtensionData]
+        public System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement> ExtraFields { get; set; }
+
         /// <summary>
-        /// Normalized horizontal position (0.0–1.0) relative to viewport width.
+        /// Horizontal position relative to the target width. Backgrounds use 0–1; free map artwork may extend beyond that basis.
         /// </summary>
 		[JsonPropertyName("x")]
 		public float X { get; set; }
 
         /// <summary>
-        /// Normalized vertical position (0.0–1.0) relative to viewport height.
+        /// Vertical position relative to the target height. Free map lights can lie on walls beyond the ground boundary.
         /// </summary>
 		[JsonPropertyName("y")]
 		public float Y { get; set; }
 
         /// <summary>
-        /// Light radius in pixel units. Determines the falloff distance in the
+        /// Light radius in target units (background pixels or map cells). Determines the falloff distance in the
         /// lighting shader.
         /// </summary>
 		[JsonPropertyName("radius")]
