@@ -13,7 +13,7 @@ El calendario es simplificado: meses de 30 días y 12 meses al año.
 El fondo de cada escena se dibuja en cuatro estados — **mañana**, **día**, **tarde** y **noche** — y la imagen pasa suavemente de uno a otro:
 
 ```text
-00 ─ noche ─ 04 ⇢ 06 ─ mañana ─ 09 ⇢ 11 ─── día ─── 17 ⇢ 19 ─ tarde ─ 21 ⇢ 22 ─ noche ─ 24
+00 ─ noche ─ 04 ⇢ 06 ─ mañana ─ 09 ⇢ 11 ─── día ─── 17 ⇢ 19 ─ tarde ─ 20 ⇢ 22 ─ noche ─ 24
                   (⇢ = un fundido de dos horas de un estado al siguiente)
 ```
 
@@ -25,7 +25,7 @@ De noche una escena está oscura salvo por sus luces. Ventanas, velas y lámpara
 
 ![Noche junto a la villa a las 23:33: solo brillan las ventanas; el icono del farol arriba de la pantalla es la lámpara portátil.](assets/night.jpg)
 
-**La lámpara portátil.** De 22:00 a 06:00 aparece un farol en la parte superior de la pantalla. Arrástralo sobre la escena para iluminar el punto que quieras mirar.
+**Lámpara portátil.** En modo cíclico está disponible de 22:00 a 06:00 si la iluminación está activada. La noche fija y el modo oscuro también la habilitan; el día fijo la oculta a cualquier hora. Arrástrala desde la barra hasta la imagen y pulsa su icono para guardarla.
 
 ![La cocina de Cthangover, iluminada por su vela y su lámpara.](assets/kitchen-lights.jpg)
 
@@ -51,4 +51,4 @@ Un `light_set` vacío quita las luces de la escena. El editor de luces de Editor
 ## Si algo falla
 
 1. **Una escena sigue clara de noche.** Su fondo no tiene mapa de profundidad, o la escena no usa sombreado según la hora.
-2. **No hay farol de noche.** Aparece solo de 22:00 a 06:00 y solo en los juegos cuya interfaz lo incluye.
+2. **No hay farol.** Revisa el modo de iluminación y si está activado; el día fijo lo oculta incluso a medianoche.

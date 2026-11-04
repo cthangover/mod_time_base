@@ -13,7 +13,7 @@ The calendar is simplified: 30-day months and 12 months a year.
 Every scene background is drawn in four moods — **morning**, **day**, **evening** and **night** — and the picture blends smoothly between them:
 
 ```text
-00 ─── night ─── 04 ⇢ 06 ─ morning ─ 09 ⇢ 11 ──── day ──── 17 ⇢ 19 ─ evening ─ 21 ⇢ 22 ─── night ─── 24
+00 ─── night ─── 04 ⇢ 06 ─ morning ─ 09 ⇢ 11 ──── day ──── 17 ⇢ 19 ─ evening ─ 20 ⇢ 22 ─── night ─── 24
                   (⇢ = a two-hour cross-fade from one mood to the next)
 ```
 
@@ -25,7 +25,7 @@ At night a scene is dark except for its lights. Windows, candles and lamps glow 
 
 ![Night outside the villa at 23:33: only the windows glow; the lantern icon at the top of the screen is the portable lamp.](assets/night.jpg)
 
-**The portable lamp.** From 22:00 to 06:00 a lantern appears at the top of the screen. Drag it onto the scene to light the spot you want to look at.
+**The portable lamp.** In cycle mode it is available from 22:00 to 06:00 when scene lighting is enabled. Fixed night and dark mode also make it available; fixed day hides it regardless of the clock. Drag it from the toolbar onto the picture; click its toolbar icon to stow it.
 
 ![The kitchen in Cthangover, lit by its candle and lamp.](assets/kitchen-lights.jpg)
 
@@ -51,4 +51,12 @@ An empty `light_set` removes the scene's lights. The light editor of Editor Tool
 ## If something goes wrong
 
 1. **A scene stays bright at night.** Its background has no depth map, or the scene does not use time-of-day shading.
-2. **No lantern at night.** It appears only from 22:00 to 06:00 and only in games whose interface includes it.
+2. **No lantern.** Check the location’s lighting mode and whether scene lighting is enabled; fixed day hides it even at midnight.
+
+## The same portable lamp in Stas's game
+
+The top-center toolbar lamp is shared by novels and RPG maps. Hold its left mouse button, drag it onto the artwork and release: the light stays where dropped. Click its toolbar icon again to stow it, then drag it out again when needed. This is a player inspection tool, not a permanent source written into the map.
+
+`junior_reaper_paper_grief` initially uses fixed daytime on its maps, which hides the lamp. Open **Light Editor → RPG maps**, choose a room (the starting office is `jrp_office`), select **Fixed night**, save, and close the editor. The toolbar lamp becomes available regardless of the clock. **Night preview** affects only the editor and does not change the saved game lighting mode.
+
+![The actual office in Stas's game: the shared toolbar lamp has been dragged onto papers on the desk, while the rest of the room stays dark.](assets/stas-toolbar-lamp.png)

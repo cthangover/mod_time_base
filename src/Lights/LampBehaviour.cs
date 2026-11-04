@@ -9,6 +9,7 @@ namespace Cthangover.Mods.Time
 {
 	/// <summary>
 	/// Draggable lamp UI element for the player's portable light source.
+    /// A four-pixel drag threshold distinguishes a click that stows the lamp from an intentional new drag.
     /// Input handling exists in both _GuiInput (bubbled) and _Input (global)
     /// to catch drags that start on the lamp but continue outside its rect.
     /// When the lamp is hidden, it resets position to offscreen (-1000,-1000)
@@ -23,6 +24,10 @@ namespace Cthangover.Mods.Time
 		private Vector2 dragPosition;
 		private bool isPlaced;
 
+        private const float DragThresholdSquared = 16f;
+        private Vector2 pressPosition;
+        private bool dragging;
+        private bool stowOnRelease;
 		private bool pressingOnLamp;
 
         /// <summary>
@@ -54,6 +59,8 @@ namespace Cthangover.Mods.Time
 				if (!value)
 				{
 					pressingOnLamp = false;
+                    dragging = false;
+                    stowOnRelease = false;
 					if (controller != null)
 					{
 						isPlaced = false;
@@ -83,7 +90,10 @@ namespace Cthangover.Mods.Time
 					if (mouseButton.Pressed)
 					{
 						pressingOnLamp = true;
-						dragPosition = GetGlobalMousePosition();
+                        dragging = false;
+                        stowOnRelease = isPlaced;
+                        pressPosition = EventPosition(mouseButton);
+						dragPosition = pressPosition;
 
 						if (isPlaced)
 						{
@@ -94,12 +104,7 @@ namespace Cthangover.Mods.Time
 					}
 					else
 					{
-						if (pressingOnLamp && !isPlaced)
-						{
-							isPlaced = true;
-							controller?.UpdateLightPos(dragPosition);
-						}
-						pressingOnLamp = false;
+                        ReleasePress(EventPosition(mouseButton));
 					}
 				}
 				AcceptEvent();
@@ -108,9 +113,7 @@ namespace Cthangover.Mods.Time
 			{
 				if (pressingOnLamp && Input.IsMouseButtonPressed(MouseButton.Left))
 				{
-					dragPosition = GetGlobalMousePosition();
-					controller?.UpdateLightPos(dragPosition);
-					isPlaced = false;
+                    DragTo(EventPosition(mouseMotion));
 					AcceptEvent();
 				}
 			}
@@ -126,9 +129,7 @@ namespace Cthangover.Mods.Time
 				&& Input.IsMouseButtonPressed(MouseButton.Left)
 				&& pressingOnLamp)
 			{
-				dragPosition = GetGlobalMousePosition();
-				controller?.UpdateLightPos(dragPosition);
-				isPlaced = false;
+                DragTo(EventPosition(mouseMotion));
 			}
 
 			if (@event is InputEventMouseButton mouseButton
@@ -136,13 +137,34 @@ namespace Cthangover.Mods.Time
 				&& !mouseButton.Pressed
 				&& pressingOnLamp)
 			{
-				if (!isPlaced)
-				{
-					isPlaced = true;
-					controller?.UpdateLightPos(dragPosition);
-				}
-				pressingOnLamp = false;
+                ReleasePress(EventPosition(mouseButton));
 			}
 		}
+        // A click may contain small motion events (including the OS warp used by input automation).
+        // Once a drag crosses the threshold it keeps following the pointer, even back near the press origin.
+        // Use the event's point, not cursor polling which may already reflect a later queued OS motion.
+        private Vector2 EventPosition(InputEventMouse mouse)
+            => GetCanvasTransform().AffineInverse() * mouse.GlobalPosition;
+
+        private void DragTo(Vector2 position)
+        {
+            if (!dragging && position.DistanceSquaredTo(pressPosition) < DragThresholdSquared) return;
+            dragging = true;
+            dragPosition = position;
+            controller?.UpdateLightPos(dragPosition);
+            isPlaced = false;
+        }
+
+        private void ReleasePress(Vector2 position)
+        {
+            if (!pressingOnLamp) return;
+            if (dragging) dragPosition = position;
+            isPlaced = !stowOnRelease || dragging;
+            controller?.UpdateLightPos(isPlaced ? dragPosition : new Vector2(-1000f, -1000f));
+            pressingOnLamp = false;
+            dragging = false;
+            stowOnRelease = false;
+        }
+
 	}
 }

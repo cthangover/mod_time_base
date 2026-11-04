@@ -13,7 +13,7 @@ Lịch được đơn giản hóa: tháng 30 ngày, một năm 12 tháng.
 Nền của mỗi cảnh được vẽ theo bốn trạng thái — **buổi sáng**, **ban ngày**, **buổi chiều** và **ban đêm** — và bức tranh chuyển mượt giữa chúng:
 
 ```text
-00 ─ đêm ─ 04 ⇢ 06 ─ sáng ─ 09 ⇢ 11 ─── ngày ─── 17 ⇢ 19 ─ chiều ─ 21 ⇢ 22 ── đêm ── 24
+00 ─ đêm ─ 04 ⇢ 06 ─ sáng ─ 09 ⇢ 11 ─── ngày ─── 17 ⇢ 19 ─ chiều ─ 20 ⇢ 22 ── đêm ── 24
                   (⇢ = khoảng hòa trộn hai giờ từ trạng thái này sang trạng thái kế tiếp)
 ```
 
@@ -25,7 +25,7 @@ Ban đêm cảnh tối trừ những đèn của nó. Cửa sổ, nến và đè
 
 ![Đêm ngoài biệt thự lúc 23:33: chỉ có cửa sổ sáng; biểu tượng đèn lồng phía trên màn hình chính là đèn cầm tay.](assets/night.jpg)
 
-**Đèn cầm tay.** Từ 22:00 đến 06:00, một chiếc đèn lồng xuất hiện phía trên màn hình. Kéo nó ra giữa cảnh để soi vào chỗ bạn muốn nhìn.
+**Đèn cầm tay.** Ở chế độ chu kỳ, đèn dùng được từ 22:00 đến 06:00 khi bật chiếu sáng. Đêm cố định và chế độ tối cũng bật đèn; ngày cố định luôn ẩn đèn. Kéo từ thanh công cụ ra hình và bấm biểu tượng để cất.
 
 ![Căn bếp trong Cthangover, được nến và đèn chiếu sáng.](assets/kitchen-lights.jpg)
 
@@ -51,4 +51,4 @@ light_set [{"x":0.673,"y":0.461,"radius":500,"influence":1,"color":"#ffff00"},{"
 ## Khi có trục trặc
 
 1. **Cảnh vẫn sáng vào ban đêm.** Nền của nó không có bản đồ chiều sâu, hoặc cảnh không dùng sắc màu theo thời gian.
-2. **Không có đèn lồng vào ban đêm.** Nó chỉ xuất hiện từ 22:00 đến 06:00 và chỉ trong những game có giao diện chứa nó.
+2. **Không có đèn.** Kiểm tra chế độ và việc bật chiếu sáng; ngày cố định ẩn đèn cả lúc nửa đêm.
