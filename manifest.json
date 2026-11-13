@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "author": "ct",
   "description": "The in-game clock, day and night: scenes change their look with the time, lamps and windows light them, and a portable lamp helps after dark.",
-  "category": "engine, library",
+  "categories": ["engine", "library"],
   "sources": [
     "src/**/*.cs"
   ],
