@@ -18,12 +18,20 @@ namespace Cthangover.Mods.Time
         /// <summary>Clears static lights and both lighting maps on the scene's controller; no-op when the scene has none.</summary>
         public static void ClearSceneLights()
         {
-            var lightController = SceneContextNode.FindNode<UiLightController>("Lights");
+            var lightController = FindController();
             if (lightController == null)
                 return;
             lightController.ClearStaticLights();
             lightController.SetupDepthMap(null);
             lightController.SetupAlbedoMap(null);
+        }
+
+        // Shared toolbar components may be present in a shell without the 2D lighting controller.
+        internal static UiLightController FindController()
+        {
+            var context = SceneContextNode.Instance;
+            return context != null && GodotObject.IsInstanceValid(context)
+                ? context.GetTree()?.Root.FindChild("Lights", true, false) as UiLightController : null;
         }
 
         /// <summary>Pushes background depth/albedo textures onto the controller singleton; skipped when it is not in the tree.</summary>

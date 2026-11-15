@@ -76,7 +76,7 @@ namespace Cthangover.Mods.Time
 			base._Ready();
 			MouseFilter = MouseFilterEnum.Stop;
             GuiInput += HandleLampInput;
-			controller = SceneContextNode.FindNode<UiLightController>("Lights");
+			controller = LightingHooks.FindController();
 			GameLogger.Log("LIGHT", $"Lamp._Ready: controller={(controller != null ? "OK" : "NULL")}", LogLevel.Debug);
 		}
 
