@@ -51,7 +51,7 @@ namespace Cthangover.Mods.Time
 		}
 
 		/// <summary>
-		/// Applies <c>timeScale</c> to <c>Engine.TimeScale</c> (global time speed), reads the
+		/// Applies <c>timeScale</c> to <c>Godot.Engine.TimeScale</c> (global time speed), reads the
 		/// current in-game time from <see cref="GameData.Runtime.Time"/>, and writes its text
 		/// representation to the <c>TimeLabel</c> node.
 		/// </summary>
